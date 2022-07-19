@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocr-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dmc-ocr
+  template:
+    metadata:
+      labels:
+        app: dmc-ocr
+    spec:
+      containers:
+      - name: dmc-ocr
+        image: ecr.dbe-hw6c1t2.microsoftdatabox.com:31001/dmc-extension_ocr:latest
+        imagePullPolicy: Always
+        env:
+        - name: "IMAGE_BASE_PATH"
+          value: "/home/site/wwwroot/"
+        - name: "COGNITIVE_SERVICES_ENDPOINT"
+          value: "http://cognitive-services-read-service:5000"
+        - name: "COGNITIVE_SERVICES_SUBSCRIPTION_KEY"
+          value: ""
+        ports:
+        - containerPort: 80
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cognitive-services-read
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cognitive-services-read
+  template:
+    metadata:
+      labels:
+        app: cognitive-services-read
+    spec:
+      containers:
+      - name: cognitive-services-read
+        image: mcr.microsoft.com/azure-cognitive-services/vision/read:3.2-model-2022-04-30
+        imagePullPolicy: Always
+        env:
+        - name: "Billing"
+          value: "https://westeurope.api.cognitive.microsoft.com"
+        - name: "ApiKey"
+          value: "<change later>"
+        - name: "Eula"
+          value: "accept"
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ocr-service
+spec:
+  selector:
+    app: dmc-ocr
+  ports:
+    - port: 8080
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cognitive-services-read-service
+spec:
+  selector:
+    app: cognitive-services-read
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP
