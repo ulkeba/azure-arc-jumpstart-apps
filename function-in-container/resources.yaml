@@ -26,6 +26,8 @@ spec:
           value: ""
         ports:
         - containerPort: 80
+      imagePullSecrets:
+      - name: acr-credentials
 --- 
 apiVersion: apps/v1
 kind: Deployment
@@ -55,6 +57,8 @@ spec:
           value: "accept"
         ports:
         - containerPort: 5000
+      imagePullSecrets:
+      - name: acr-credentials
 ---
 apiVersion: v1
 kind: Service
