@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: dmc-ocr
-        image: ecr.dbe-hw6c1t2.microsoftdatabox.com:31001/dmc-extension_ocr:latest
+        image: dmcarcboxd02acr.azurecr.io/dmc-extension_ocr:latest
         imagePullPolicy: Always
         env:
         - name: "IMAGE_BASE_PATH"
